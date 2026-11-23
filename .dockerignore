@@ -1,0 +1,6 @@
+.git
+.github
+.gitignore
+Jenkinsfile
+README.md
+*.tfstate
