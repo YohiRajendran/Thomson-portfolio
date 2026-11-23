@@ -9,7 +9,7 @@ spec:
 
   selector:
     app: thomson
-
+ 
   ports:
     - protocol: TCP
       port: 80

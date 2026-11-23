@@ -22,7 +22,10 @@ pipeline {
                     url: 'https://github.com/YohiRajendran/Thomson-portfolio.git'
             }
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> fb7a78a (updated files)
         stage('Build Docker Image') {
             steps {
                 sh '''
@@ -57,11 +60,19 @@ pipeline {
 
     post {
         success {
+<<<<<<< HEAD
             echo 'Thomson portfolio deployed successfully'
         }
 
         failure {
             echo 'Deployment failed. Check Jenkins console output'
+=======
+            echo 'Thomson portfolio deployed successfully!'
+        }
+
+        failure {
+            echo 'Deployment failed. Check Jenkins console output.'
+>>>>>>> fb7a78a (updated files)
         }
     }
 }
