@@ -1,50 +1,67 @@
+
 pipeline {
-    agent any 
+    agent any
+
     tools {
         nodejs 'Node20'
     }
-    stages('clean Workspace'){
-        steps {
-            cleanWs()
-        }
-    }
-    stage('checkout from Git'){
-        steps {
 
+    stages {
+
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('Checkout from Git') {
+            steps {
+                git branch: 'main',
+                    changelog: false,
+                    poll: false,
+                    url: 'https://github.com/YohiRajendran/Thomson-portfolio.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                    docker build -t thomson-portfolio-v1 .
+                '''
+            }
+        }
+
+        stage('Deploy to Container') {
+            steps {
+                sh '''
+                    docker rm -f thomson-portfolio || true
+
+                    docker run -d \
+                        --name thomson-portfolio \
+                        --restart unless-stopped \
+                        -p 3000:3000 \
+                        thomson-portfolio-v1
+                '''
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh '''
+                    docker ps
+                    docker logs --tail 20 thomson-portfolio
+                '''
+            }
         }
     }
-    stage('Build Docker image'){
-        steps {
-            sh '''
-                docker build -t thomson-portfolio-v1 .
-            '''
+
+    post {
+        success {
+            echo 'Thomson portfolio deployed successfully'
         }
-    }
-    stage('Deploy to container'){
-        steps{
-            sh '''
-                docker rm -f thomson-portfolio-v1 || true
-                docker run -d \
-                    --name thomson-portfolio \
-                    --restart unless-stopped \
-                    -p 3000:3000 \
-            '''
+
+        failure {
+            echo 'Deployment failed. Check Jenkins console output'
         }
-    }
-    stage('verify Deployment'){
-        steps{
-            sh '''
-                docker ps 
-                docker logs --tail 20 thomson-portfolio
-            '''
-        }
-    }
-}
-post {
-    success {
-        echo 'thomson portfolio deployed successfully'
-    }
-    failure {
-        echo 'Deployment failed. check jenkins console output'
     }
 }
