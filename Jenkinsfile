@@ -22,10 +22,6 @@ pipeline {
                     url: 'https://github.com/YohiRajendran/Thomson-portfolio.git'
             }
         }
-<<<<<<< HEAD
-
-=======
->>>>>>> fb7a78a (updated files)
         stage('Build Docker Image') {
             steps {
                 sh '''
@@ -56,23 +52,27 @@ pipeline {
                 '''
             }
         }
+        stage('Deploy to k8s container'){
+            steps{
+                script{
+                    dir('Kubernetes') {
+                        withKubeConfig(caCertificate: '', clusterName: '' , contectName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: ''){
+                            sh 'kubectl apply -f deployment.yaml'
+                            sh 'kubectl apply -f service.yaml'
+                        }
+                    }
+                }
+            }
+        }
     }
 
     post {
         success {
-<<<<<<< HEAD
             echo 'Thomson portfolio deployed successfully'
         }
 
         failure {
             echo 'Deployment failed. Check Jenkins console output'
-=======
-            echo 'Thomson portfolio deployed successfully!'
-        }
-
-        failure {
-            echo 'Deployment failed. Check Jenkins console output.'
->>>>>>> fb7a78a (updated files)
         }
     }
 }
